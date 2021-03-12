@@ -29,8 +29,6 @@ const postUser1 = async () => {
     },
   };
   const user = new User(body);
-  user.created = new Date().toLocaleString();
-
   const response = await request(app).post('/').set('Content-Type', 'application/json').send(user);
 
   return response;
@@ -108,7 +106,7 @@ describe('GET REQUESTS', () => {
     await postUser1();
     const response = await getUser(10001);
     expect(response.statusCode).toBe(200);
-    expect(response.body).toStrictEqual({
+    expect(response.body).toContain({
       id: 10001,
       firstName: 'Galileo',
       lastName: 'Galilei',
