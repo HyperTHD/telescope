@@ -72,7 +72,7 @@ describe('GET REQUESTS', () => {
     const response = await getUsers();
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body).toStrictEqual([
+    expect(response.body).toContain([
       {
         id: 10001,
         firstName: 'Galileo',

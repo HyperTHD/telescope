@@ -7,6 +7,6 @@ require('dotenv').config({
 module.exports = {
   ...baseConfig,
   rootDir: '../../..',
-  testMatch: ['<rootDir>/src/api/user/test/*.test.js'],
+  testMatch: ['<rootDir>/src/api/user/test/e2e/*.test.js'],
   collectCoverageFrom: ['<rootDir>/src/api/user/src/**/*.js'],
 };
