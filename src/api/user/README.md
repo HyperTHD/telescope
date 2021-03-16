@@ -20,14 +20,6 @@ Firestore is a NoSQL database for mobile, web, and server development from Fireb
 
 More info can be found on the [Firebase documentation page](https://firebase.google.com/docs/firestore), or for the more visually inclined [on the youtube page](https://www.youtube.com/playlist?list=PLl-K7zZEsYLluG5MCVEzXAQ7ACZBCuZgZ).
 
-## Requirements
-
-\- Node.js - version 8.0 or higher.
-
-\- Java - version 1.8 or higher (used with the Emulator.)
-
-The Local Emulator Suite must be installed on your machine in order to run the Firestore emulator. Information on how to install it can be found [here](https://firebase.google.com/docs/emulator-suite/install_and_configure) (or via `npm install -g firebase-tools`).
-
 ## Install
 
 from inside /api/src/user:
@@ -49,10 +41,11 @@ npm install:user-service
 npm start
 
 # running firestore emulator locally
-npm run emu
+npm run services:start firebase
+npm start (or test)
 
-# test runner (must be used in conjunction with emu)
-npm run jest (or npm run test to run both)
+# test runner (must be used in conjunction with the firebase service)
+npm run jest (or npm test to run both)
 
 # dev mode with automatic restarts
 npm run dev

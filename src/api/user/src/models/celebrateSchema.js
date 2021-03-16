@@ -1,13 +1,13 @@
 const { celebrate, Joi, Segments } = require('celebrate');
 
-const get = () =>
+const validateId = () =>
   celebrate({
     [Segments.PARAMS]: {
       id: Joi.string().required(),
     },
   });
 
-const post = () =>
+const validateUser = () =>
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       id: Joi.number().required(),
@@ -26,7 +26,5 @@ const post = () =>
     }),
   });
 
-exports.post = post;
-exports.get = get;
-exports.update = post;
-exports.delete = get;
+exports.validateUser = validateUser;
+exports.validateId = validateId;

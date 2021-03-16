@@ -8,7 +8,7 @@ const router = Router();
 
 // get a user with a supplied id, validated by the celebrateSchema
 // rejected if a user could not be found, otherwise user returned
-router.get('/:id', celebrateSchema.get(), async (req, res, next) => {
+router.get('/:id', celebrateSchema.validateId(), async (req, res, next) => {
   try {
     const userRef = db.collection('users').doc(req.params.id);
     const doc = await userRef.get();
@@ -56,7 +56,7 @@ router.get('/', async (req, res, next) => {
 
 // post a user with supplied info, validated by the celebrateSchema
 // rejected if a user already exists with that id, otherwise user created
-router.post('/', celebrateSchema.post(), async (req, res, next) => {
+router.post('/', celebrateSchema.validateUser(), async (req, res, next) => {
   try {
     const userRef = db.collection('users').doc(`${req.body.id}`);
     const doc = await userRef.get();
@@ -82,7 +82,7 @@ router.post('/', celebrateSchema.post(), async (req, res, next) => {
 
 // put (update) a user with a supplied id, validated by the celebrateSchema
 // rejected if a user could not be found, otherwise user updated
-router.put('/:id', celebrateSchema.update(), async (req, res, next) => {
+router.put('/:id', celebrateSchema.validateUser(), async (req, res, next) => {
   try {
     const userRef = db.collection('users').doc(`${req.body.id}`);
     const doc = await userRef.get();
@@ -108,7 +108,7 @@ router.put('/:id', celebrateSchema.update(), async (req, res, next) => {
 
 // delete a user with a supplied id, validated by the celebrateSchema
 // rejected if a user could not be found, otherwise user deleted
-router.delete('/:id', celebrateSchema.delete(), async (req, res, next) => {
+router.delete('/:id', celebrateSchema.validateId(), async (req, res, next) => {
   try {
     const userRef = db.collection('users').doc(req.params.id);
     const doc = await userRef.get();
