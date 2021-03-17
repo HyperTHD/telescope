@@ -37,14 +37,16 @@ const createUser = async (editedUser = {}) => {
 };
 
 // Tests
-describe('GET REQUESTS', () => {
-  beforeEach(() => clearData());
-
+describe('Ensure environment variable(s) are set', () => {
   test('process.env.development === localhost:8088', () => {
     expect(process.env.FIRESTORE_EMULATOR_HOST).toEqual('localhost:8088');
   });
+});
 
-  test('Get JSON, get all users', async () => {
+describe('GET REQUESTS', () => {
+  beforeEach(() => clearData());
+
+  test('Accepted - Get all users', async () => {
     const galileo = await createUser({ id: 10001 });
     const carl = await createUser({
       id: 10002,
@@ -99,7 +101,7 @@ describe('GET REQUESTS', () => {
     ]);
   });
 
-  test('Get JSON, Accepted - postUser() was called, thus user 10001 exists', async () => {
+  test('Accepted - Get one user', async () => {
     await createUser({ id: 10001 });
     const response = await getUser(10001);
     expect(response.statusCode).toBe(200);
@@ -119,7 +121,7 @@ describe('GET REQUESTS', () => {
     });
   });
 
-  test('Get JSON, Rejected - postUser() was not called, thus no users exist', async () => {
+  test('Rejected - Get one user which not exist', async () => {
     const response = await getUser(10001);
     expect(response.statusCode).toBe(404);
     expect(response.body).toStrictEqual({
@@ -132,7 +134,7 @@ describe('PUT REQUESTS', () => {
   beforeEach(() => clearData());
   afterEach(() => clearData());
 
-  test('Put JSON, Accepted - updated an existing user', async () => {
+  test('Accepted - Update a user', async () => {
     await createUser({ id: 10001 });
     const body = {
       id: 10001,
@@ -159,7 +161,8 @@ describe('PUT REQUESTS', () => {
       msg: 'Updated user 10001',
     });
   });
-  test('Put JSON, Rejected - tried to update a nonexistent user', async () => {
+
+  test('Rejected - Update a nonexistent user', async () => {
     const body = {
       id: 10002,
       firstName: 'Carl',
@@ -191,13 +194,13 @@ describe('POST REQUESTS', () => {
   beforeEach(() => clearData());
   afterEach(() => clearData());
 
-  test('Post JSON, Accepted - postUser() was called, thus user 10001 was created', async () => {
+  test('Accepted - Create a user', async () => {
     const { response } = await createUser({ id: 10001 });
     expect(response.statusCode).toBe(201);
     expect(response.body).toStrictEqual({ msg: 'Added user with id: 10001' });
   });
 
-  test('Post JSON, Rejected - postUser() was called twice, but user 10001 already exists', async () => {
+  test('Rejected - Create two of the same user', async () => {
     await createUser({ id: 10001 });
     const { response } = await createUser({ id: 10001 });
 
@@ -207,7 +210,7 @@ describe('POST REQUESTS', () => {
     });
   });
 
-  test('Post JSON, Rejected - Feeds array must only contain strings', async () => {
+  test('Rejected - Ensure that the feeds array can only contain strings', async () => {
     const body = {
       id: 10002,
       firstName: 'Carl',
@@ -232,7 +235,7 @@ describe('POST REQUESTS', () => {
     expect(response.body.validation.body.message).toStrictEqual('"feeds[0]" must be a string');
   });
 
-  test('Post JSON, Rejected - id is a required field', async () => {
+  test('Rejected - Ensure that a user id is supplied', async () => {
     const body = {
       firstName: 'Carl',
       lastName: 'Sagan',
@@ -256,7 +259,7 @@ describe('POST REQUESTS', () => {
     expect(response.body.validation.body.message).toStrictEqual('"id" is required');
   });
 
-  test('Post JSON, Rejected - firstName is a required field', async () => {
+  test('Rejected - Ensure that a first name is supplied', async () => {
     const body = {
       id: 10002,
       lastName: 'Sagan',
@@ -280,7 +283,7 @@ describe('POST REQUESTS', () => {
     expect(response.body.validation.body.message).toStrictEqual('"firstName" is required');
   });
 
-  test('Post JSON, Rejected - lastName is a required field', async () => {
+  test('Rejected - Ensure that a last name is supplied', async () => {
     const body = {
       id: 10002,
       firstName: 'Carl',
@@ -304,7 +307,7 @@ describe('POST REQUESTS', () => {
     expect(response.body.validation.body.message).toStrictEqual('"lastName" is required');
   });
 
-  test('Post JSON, Rejected - feeds is a required field', async () => {
+  test('Rejected - Ensure that a blog feed url is supplied', async () => {
     const body = {
       id: 10002,
       firstName: 'Carl',
@@ -333,7 +336,7 @@ describe('DELETE REQUESTS', () => {
   beforeEach(() => clearData());
   afterEach(() => clearData());
 
-  test('Delete JSON, Accepted - deleted an existing user', async () => {
+  test('Accepted - Deleted a user', async () => {
     await createUser({ id: 10001 });
 
     const response = await request(app).delete('/10001').set('Content-Type', 'application/json');
@@ -344,7 +347,7 @@ describe('DELETE REQUESTS', () => {
     });
   });
 
-  test('Delete JSON, Rejected - deleted an existing user', async () => {
+  test('Rejected - Deleted a nonexistent user', async () => {
     const response = await request(app).delete('/10001').set('Content-Type', 'application/json');
 
     expect(response.statusCode).toBe(404);
