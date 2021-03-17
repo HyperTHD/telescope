@@ -5,7 +5,9 @@ class User {
     this.id = data.id;
     this.firstName = data.firstName;
     this.lastName = data.lastName;
-    this.displayName = undefined ? `${this.firstName}${' '}${this.lastName}` : this.displayName;
+    this.displayName = !data.displayName
+      ? `${this.firstName}${' '}${this.lastName}`
+      : data.displayName;
     this.isAdmin = data.isAdmin;
     this.isFlagged = data.isFlagged;
     this.feeds = data.feeds;

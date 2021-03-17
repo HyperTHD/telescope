@@ -11,9 +11,10 @@ const getUser = (id) => request(app).get(`/${id}`);
 
 const getUsers = () => request(app).get('/');
 
-const postUser1 = async () => {
-  const body = {
-    id: 10001,
+const createUser = async (editedUser = {}) => {
+  const defaultUser = {
+    // Use a unique id number for each user
+    id: Date.now(),
     firstName: 'Galileo',
     lastName: 'Galilei',
     displayName: 'Galileo Galilei',
@@ -26,31 +27,13 @@ const postUser1 = async () => {
         'https://avatars.githubusercontent.com/u/7242003?s=460&u=733c50a2f50ba297ed30f6b5921a511c2f43bfee&v=4',
     },
   };
-  const user = new User(body);
+
+  // If the user sends use any user properties, override the default values.  If not, use default as is.
+  const user = new User({ ...defaultUser, ...editedUser });
   const response = await request(app).post('/').set('Content-Type', 'application/json').send(user);
 
-  return response;
-};
-
-const postUser2 = async () => {
-  const body = {
-    id: 10002,
-    firstName: 'Carl',
-    lastName: 'Sagan',
-    displayName: 'Carl Sagan',
-    isAdmin: true,
-    isFlagged: true,
-    feeds: ['https://dev.to/feed/carlsagan'],
-    github: {
-      username: 'carlsagan',
-      avatarUrl:
-        'https://avatars.githubusercontent.com/u/7242003?s=460&u=733c50a2f50ba297ed30f6b5921a511c2f43bfee&v=4',
-    },
-  };
-  const user = new User(body);
-  const response = await request(app).post('/').set('Content-Type', 'application/json').send(user);
-
-  return response;
+  // Return both the user object and the response, so we can compare the two.
+  return { user, response };
 };
 
 // Tests
@@ -62,12 +45,29 @@ describe('GET REQUESTS', () => {
   });
 
   test('Get JSON, get all users', async () => {
-    await postUser1();
-    await postUser2();
+    const galileo = await createUser({ id: 10001 });
+    const carl = await createUser({
+      id: 10002,
+      firstName: 'Carl',
+      lastName: 'Sagan',
+      displayName: 'Carl Sagan',
+      isAdmin: true,
+      isFlagged: true,
+      feeds: ['https://dev.to/feed/carlsagan'],
+      github: {
+        username: 'carlsagan',
+        avatarUrl:
+          'https://avatars.githubusercontent.com/u/7242003?s=460&u=733c50a2f50ba297ed30f6b5921a511c2f43bfee&v=4',
+      },
+    });
+
+    expect(galileo.response.status).toBe(201);
+    expect(carl.response.status).toBe(201);
+
     const response = await getUsers();
-    expect(response.statusCode).toBe(200);
+    expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body).toContain([
+    expect(response.body).toEqual([
       {
         id: 10001,
         firstName: 'Galileo',
@@ -100,10 +100,10 @@ describe('GET REQUESTS', () => {
   });
 
   test('Get JSON, Accepted - postUser() was called, thus user 10001 exists', async () => {
-    await postUser1();
+    await createUser({ id: 10001 });
     const response = await getUser(10001);
     expect(response.statusCode).toBe(200);
-    expect(response.body).toContain({
+    expect(response.body).toEqual({
       id: 10001,
       firstName: 'Galileo',
       lastName: 'Galilei',
@@ -133,7 +133,7 @@ describe('PUT REQUESTS', () => {
   afterEach(() => clearData());
 
   test('Put JSON, Accepted - updated an existing user', async () => {
-    await postUser1();
+    await createUser({ id: 10001 });
     const body = {
       id: 10001,
       firstName: 'Galileo',
@@ -192,14 +192,14 @@ describe('POST REQUESTS', () => {
   afterEach(() => clearData());
 
   test('Post JSON, Accepted - postUser() was called, thus user 10001 was created', async () => {
-    const response = await postUser1();
+    const { response } = await createUser({ id: 10001 });
     expect(response.statusCode).toBe(201);
     expect(response.body).toStrictEqual({ msg: 'Added user with id: 10001' });
   });
 
   test('Post JSON, Rejected - postUser() was called twice, but user 10001 already exists', async () => {
-    await postUser1();
-    const response = await postUser1();
+    await createUser({ id: 10001 });
+    const { response } = await createUser({ id: 10001 });
 
     expect(response.statusCode).toBe(400);
     expect(response.body).toStrictEqual({
@@ -334,7 +334,7 @@ describe('DELETE REQUESTS', () => {
   afterEach(() => clearData());
 
   test('Delete JSON, Accepted - deleted an existing user', async () => {
-    await postUser1();
+    await createUser({ id: 10001 });
 
     const response = await request(app).delete('/10001').set('Content-Type', 'application/json');
 

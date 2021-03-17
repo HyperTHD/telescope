@@ -1,6 +1,8 @@
 const admin = require('firebase-admin');
 const { logger } = require('@senecacdot/satellite');
 
+process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8088';
+
 // If a private key exists in env.development, run in online mode
 // else run in emulator mode
 if (process.env.PRIVATE_KEY) {

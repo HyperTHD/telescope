@@ -42,10 +42,10 @@ npm start
 
 # running firestore emulator locally
 npm run services:start firebase
-npm start (or test)
+npm start
 
 # test runner (must be used in conjunction with the firebase service)
-npm run jest (or npm test to run both)
+npm run jest:e2e (or npm run jest:e2e src\api\user\test\e2e)
 
 # dev mode with automatic restarts
 npm run dev
@@ -54,17 +54,6 @@ npm run dev
 By default the server is running on http://localhost:6666/.
 
 ### Examples
-
-Customized HTTP requests can be made with a tool like Postman:
-
-1. `npm run emu`
-2. `npm run dev`
-
-or alternatively, by running the test runner (using testing data) instead:
-
-1. `npm run test` (or `npm run emu, npm run dev, npm run jest`)
-
----
 
 \- `GET /user/:id` - returns 200 with the user specified by the id, or 404 if a user does not exist.
 
@@ -78,6 +67,6 @@ or alternatively, by running the test runner (using testing data) instead:
 
 ## Docker (section currently incomplete)
 
-\- To build and tag: `docker build . -t telescope_img_svc:latest`
+\- To build and tag: `docker build . -t telescope_user_svc:latest`
 
-\- To run locally: `docker run -p 4444:4444 telescope_img_svc:latest`
+\- To run locally: `docker run -p 6666:6666 telescope_user_svc:latest`
