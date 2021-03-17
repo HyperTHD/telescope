@@ -5,11 +5,11 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import SearchIcon from '@material-ui/icons/Search';
 import HomeIcon from '@material-ui/icons/Home';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
-import NavBarButton, { NavBarIcon } from './NavBarButton';
 
 // 1.7 band-aid (Removing theme | line 6)
 // import dynamic from 'next/dynamic';
 
+import NavBarButton, { NavBarIconProps } from './NavBarButton';
 import Logo from '../Logo';
 import Login from '../Login';
 
@@ -46,12 +46,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   toolbar: {
-    height: '27rem',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     [theme.breakpoints.down(1024)]: {
-      height: 'inherit',
       flex: '1',
       justifyContent: 'space-around',
       flexDirection: 'row',
@@ -66,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const buttons: NavBarIcon[] = [
+const iconProps: NavBarIconProps[] = [
   {
     href: '/search',
     title: 'Search',
@@ -105,11 +103,9 @@ export default function NavBar() {
             <div className={classes.grow} />
           </>
         )}
-
-        {buttons.map((button) => (
-          <NavBarButton button={button} key={button.title} />
+        {iconProps.map((props) => (
+          <NavBarButton {...props} key={props.title} />
         ))}
-
         <Login />
         {/* 1.7 band-aid (Removing theme| line 87) */}
         {/* <DynamicThemeToggleButton /> */}

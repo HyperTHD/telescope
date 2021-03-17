@@ -1,0 +1,61 @@
+################################################################################
+# Development containers needed to support local development, testing, and CI.
+#
+# This docker-compose file is meant to be used with docker-compose.yml as a base:
+#
+# $ docker-compose --env-file config/env.development up -d
+#
+# See https://docs.docker.com/compose/production/
+################################################################################
+version: '3'
+
+services:
+  # API Gateway
+  traefik:
+    command:
+      - '--log.level=DEBUG'
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+    ports:
+      # The HTTP port
+      - '80:80'
+      # The Web UI (enabled by --api.insecure=true)
+      - '8080:8080'
+
+  # SSO Identity Provider test service, https://simplesamlphp.org
+  # Access to the login page available at http://localhost:8081
+  login:
+    image: kristophjunge/test-saml-idp
+    container_name: 'login'
+    ports:
+      - '8081:8080'
+    environment:
+      - SIMPLESAMLPHP_SP_ENTITY_ID=${SAML_ENTITY_ID}
+      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=${SSO_LOGIN_CALLBACK_URL}
+      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=${SLO_LOGOUT_CALLBACK_URL}
+    volumes:
+      - ../config/simplesamlphp-users.php:/var/www/simplesamlphp/config/authsources.php
+      - ../config/saml20-idp-hosted.php:/var/www/simplesamlphp/metadata/saml20-idp-hosted.php
+
+  # Firebase Emulator for offline testing
+  firebase:
+    container_name: 'firebase'
+    image: andreysenov/firebase-tools
+    volumes:
+      # Copy firebase.config into the container so we get proper ip/port binding
+      - ../config/firebase.json:/home/node/firebase.json
+    command: firebase emulators:start --project telescope --only firestore
+    ports:
+      # Emulator Suite UI
+      - '4000:4000'
+      # Cloud Firestore
+      - '8088:8088'
+
+  redis:
+    ports:
+      - '6379:6379'
+
+  elasticsearch:
+    ports:
+      - '9200:9200'

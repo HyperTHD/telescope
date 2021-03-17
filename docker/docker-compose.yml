@@ -1,0 +1,160 @@
+################################################################################
+# Base docker-compose.yml for Telescope services. Use the additional
+# production.yml file for production, and development.yml for development.
+################################################################################
+version: '3'
+
+services:
+  ##############################################################################
+  # Telescope 2.0 Microservices
+  ##############################################################################
+
+  # image service
+  image:
+    container_name: 'image'
+    build:
+      context: ../src/api/image
+      dockerfile: Dockerfile
+    environment:
+      - IMAGE_PORT
+    ports:
+      - ${IMAGE_PORT}
+    depends_on:
+      - traefik
+    labels:
+      # Enable Traefik
+      - 'traefik.enable=true'
+      # Traefik routing for the image service at /v1/image
+      - 'traefik.http.routers.image.rule=PathPrefix(`/${API_VERSION}/image`)'
+      # Specify the image service port
+      - 'traefik.http.services.image.loadbalancer.server.port=${IMAGE_PORT}'
+      # Add middleware to this route to strip the /v1/image prefix
+      - 'traefik.http.middlewares.strip_image_prefix.stripprefix.prefixes=/${API_VERSION}/image'
+      - 'traefik.http.middlewares.strip_image_prefix.stripprefix.forceSlash=true'
+      - 'traefik.http.routers.image.middlewares=strip_image_prefix'
+
+  # auth service
+  auth:
+    container_name: 'auth'
+    build:
+      context: ../src/api/auth
+      dockerfile: Dockerfile
+    environment:
+      - AUTH_PORT
+      - SSO_LOGIN_URL
+      - SSO_LOGIN_CALLBACK_URL
+      - SLO_LOGOUT_URL
+      - SLO_LOGOUT_CALLBACK_URL
+      - SSO_IDP_PUBLIC_KEY_CERT
+      - SAML_ENTITY_ID
+      - SECRET
+      - ADMINISTRATORS
+      - ALLOWED_APP_ORIGINS
+      - JWT_ISSUER
+      - JWT_EXPIRES_IN
+    ports:
+      - ${AUTH_PORT}
+    depends_on:
+      - traefik
+    labels:
+      # Enable Traefik
+      - 'traefik.enable=true'
+      # Traefik routing for the auth service at /v1/auth
+      - 'traefik.http.routers.auth.rule=PathPrefix(`/${API_VERSION}/auth`)'
+      # Specify the auth service port
+      - 'traefik.http.services.auth.loadbalancer.server.port=${AUTH_PORT}'
+      # Add middleware to this route to strip the /v1/auth prefix
+      - 'traefik.http.middlewares.strip_auth_prefix.stripprefix.prefixes=/${API_VERSION}/auth'
+      - 'traefik.http.middlewares.strip_auth_prefix.stripprefix.forceSlash=true'
+      - 'traefik.http.routers.auth.middlewares=strip_auth_prefix'
+
+  # posts service
+  posts:
+    container_name: 'posts'
+    build:
+      context: ../src/api/posts
+      dockerfile: Dockerfile
+    environment:
+      - POSTS_PORT
+      - POSTS_URL
+    ports:
+      - ${POSTS_PORT}
+    depends_on:
+      - traefik
+      - redis
+    labels:
+      # Enable Traefik
+      - 'traefik.enable=true'
+      # Traefik routing for the image service at /v1/image
+      - 'traefik.http.routers.posts.rule=PathPrefix(`/${API_VERSION}/posts`)'
+      # Specify the posts service port
+      - 'traefik.http.services.posts.loadbalancer.server.port=${POSTS_PORT}'
+      # Add middleware to this route to strip the /v1/posts prefix
+      - 'traefik.http.middlewares.strip_posts_prefix.stripprefix.prefixes=/${API_VERSION}/posts'
+      - 'traefik.http.middlewares.strip_posts_prefix.stripprefix.forceSlash=true'
+      - 'traefik.http.routers.posts.middlewares=strip_posts_prefix'
+
+  # feed discovery service
+  feed-discovery:
+    container_name: 'feed-discovery'
+    build:
+      context: ../src/api/feed-discovery
+      dockerfile: Dockerfile
+    environment:
+      - FEED_DISCOVERY_PORT
+    ports:
+      - ${FEED_DISCOVERY_PORT}
+    depends_on:
+      - traefik
+    labels:
+      # Enable Traefik
+      - 'traefik.enable=true'
+      # Traefik routing for the feed discovery service at /v1/image
+      - 'traefik.http.routers.feed-discovery.rule=PathPrefix(`/${API_VERSION}/feed-discovery`)'
+      # Specify the feed discovery service port
+      - 'traefik.http.services.feed-discovery.loadbalancer.server.port=${FEED_DISCOVERY_PORT}'
+      # Add middleware to this route to strip the /v1/feed-discovery prefix
+      - 'traefik.http.middlewares.strip_feed_discovery_prefix.stripprefix.prefixes=/${API_VERSION}/feed-discovery'
+      - 'traefik.http.middlewares.strip_feed_discovery_prefix.stripprefix.forceSlash=true'
+      - 'traefik.http.routers.feed-discovery.middlewares=strip_feed_discovery_prefix'
+
+  ##############################################################################
+  # Third-Party Dependencies and Support Services
+  ##############################################################################
+
+  # API Gateway
+  traefik:
+    image: traefik:v2.4.5
+    container_name: 'traefik'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - 'traefik.enable=true'
+
+  # Redis
+  redis:
+    image: redis:latest
+    container_name: 'redis'
+    ports:
+      - '6379'
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - ../redis-data:/data
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    container_name: 'elasticsearch'
+    environment:
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+      - discovery.type=single-node
+    # See the following:
+    # - https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-docker.html,
+    # - https://github.com/deviantony/docker-elk/issues/243
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - '9200'

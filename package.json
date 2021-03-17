@@ -1,7 +1,7 @@
 {
   "name": "@senecacdot/telescope",
   "private": true,
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "A tool for tracking blogs in orbit around Seneca's open source involvement",
   "bin": {
     "add-feed": "./tools/add-feed.js",
@@ -13,6 +13,8 @@
     "install:auth-service": "cd src/api/auth && npm install",
     "install:image-service": "cd src/api/image && npm install",
     "install:user-service": "cd src/api/user && npm install",
+    "install:posts-service": "cd src/api/posts && npm install",
+    "install:feed-discovery-service": "cd src/api/feed-discovery && npm install",
     "install:autodeployment": "cd tools/autodeployment && npm install",
     "install:next": "cd src/web && npm install",
     "build": "npm run build --prefix src/web --",
@@ -35,10 +37,10 @@
     "test-ci": "run-s prettier-check test",
     "preversion": "npm run test-ci",
     "postversion": "git push upstream master --tags",
-    "services:start": "./bin/services-start.js --",
-    "services:stop": "./bin/services-stop.js",
-    "services:logs": "./bin/services-logs.js --",
-    "services:clean": "./bin/services-clean.js"
+    "services:start": "node bin/services-start.js --",
+    "services:stop": "node bin/services-stop.js",
+    "services:logs": "node bin/services-logs.js --",
+    "services:clean": "node bin/services-clean.js"
   },
   "husky": {
     "hooks": {
@@ -79,7 +81,7 @@
     "http-proxy-middleware": "1.0.6",
     "ioredis": "4.23.0",
     "ioredis-mock": "5.2.4",
-    "jsdom": "16.5.0",
+    "jsdom": "16.5.1",
     "node-fetch": "2.6.1",
     "normalize-url": "5.3.0",
     "opml-generator": "1.1.1",
@@ -99,7 +101,7 @@
     "@babel/preset-react": "7.12.13",
     "@babel/preset-typescript": "7.13.0",
     "@types/jest": "26.0.20",
-    "@typescript-eslint/eslint-plugin": "4.16.1",
+    "@typescript-eslint/eslint-plugin": "4.17.0",
     "@typescript-eslint/parser": "4.17.0",
     "@vercel/node": "1.9.1",
     "babel-jest": "26.6.3",
@@ -113,7 +115,7 @@
     "eslint-plugin-promise": "4.3.1",
     "eslint-plugin-react": "7.22.0",
     "eslint-plugin-react-hooks": "4.2.0",
-    "fast-xml-parser": "3.18.0",
+    "fast-xml-parser": "3.19.0",
     "husky": "5.1.3",
     "jest": "26.6.3",
     "jest-fetch-mock": "3.0.3",

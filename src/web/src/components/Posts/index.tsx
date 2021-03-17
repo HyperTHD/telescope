@@ -5,7 +5,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import { usePrevious } from 'react-use';
 import SentimentDissatisfiedRoundedIcon from '@material-ui/icons/SentimentDissatisfiedRounded';
 import Timeline from './Timeline';
-import useSiteMetaData from '../../hooks/use-site-metadata';
+import { postsServiceUrl } from '../../config';
 import useFaviconBadge from '../../hooks/use-favicon-badge';
 import { Post } from '../../interfaces';
 
@@ -38,11 +38,10 @@ const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 const Posts = () => {
   const classes = useStyles();
-  const { telescopeUrl } = useSiteMetaData();
   const [currentPostId, setCurrentPostId] = useState<string | null>();
 
   const { data, size, setSize, error } = useSWRInfinite<Post[]>(
-    (index: number) => `${telescopeUrl}/posts?page=${index + 1}`,
+    (index: number) => `${postsServiceUrl}/?page=${index + 1}`,
     {
       refreshInterval: REFRESH_INTERVAL,
       refreshWhenHidden: true,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { makeStyles, Theme, createStyles, Fab, Grid, Typography } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import useSiteMetadata from '../hooks/use-site-metadata';
+import { telescopeUrl } from '../config';
 import BannerDynamicItems from './BannerDynamicItems';
 import ScrollAction from './ScrollAction';
 
@@ -30,8 +30,9 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     heroBanner: {
-      height: '100vh',
+      maxHeight: '100vh',
       overflow: 'hidden',
+      position: 'relative',
     },
     version: {
       position: 'absolute',
@@ -75,12 +76,15 @@ const useStyles = makeStyles((theme: Theme) =>
     container: {
       backgroundColor: '#E5E5E5',
     },
+    arrowDownIcon: {
+      color: theme.palette.text.primary,
+      fontSize: '3rem',
+    },
   })
 );
 
 export default function Banner() {
   const classes = useStyles();
-  const { telescopeUrl } = useSiteMetadata();
   const [gitInfo, setGitInfo] = useState({
     gitHubUrl: '',
     sha: '',
@@ -135,7 +139,7 @@ export default function Banner() {
           <div className={classes.icon}>
             <ScrollAction>
               <Fab color="secondary" aria-label="scroll-down">
-                <KeyboardArrowDownIcon fontSize="large" />
+                <KeyboardArrowDownIcon className={classes.arrowDownIcon} />
               </Fab>
             </ScrollAction>
           </div>
