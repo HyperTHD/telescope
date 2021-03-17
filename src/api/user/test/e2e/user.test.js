@@ -5,9 +5,7 @@ const { app } = require('../../index');
 const User = require('../../src/models/user');
 
 // Utility functions
-const clearData = async () => {
-  await firebaseTesting.clearFirestoreData({ projectId: 'telescope' });
-};
+const clearData = () => firebaseTesting.clearFirestoreData({ projectId: 'telescope' });
 
 const getUser = (id) => request(app).get(`/${id}`);
 
@@ -58,7 +56,6 @@ const postUser2 = async () => {
 // Tests
 describe('GET REQUESTS', () => {
   beforeEach(() => clearData());
-  afterEach(() => clearData());
 
   test('process.env.development === localhost:8088', () => {
     expect(process.env.FIRESTORE_EMULATOR_HOST).toEqual('localhost:8088');

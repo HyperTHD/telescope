@@ -18,13 +18,13 @@ if (process.env.PRIVATE_KEY) {
       client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
     }),
   });
-  logger.info('Server running in online mode');
+  logger.debug('Server running in online mode');
 } else {
   admin.initializeApp({
     projectId: 'telescope',
     credential: admin.credential.applicationDefault(),
   });
-  logger.info('Server running in emulator mode');
+  logger.debug('Server running in emulator mode');
 }
 
 module.exports = admin.firestore();
