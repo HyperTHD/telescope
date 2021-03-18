@@ -89,7 +89,7 @@ router.put('/:id', validateUser(), async (req, res, next) => {
 
     if (!doc.exists) {
       logger.debug(`User data (id: ${doc.id}) was requested by ${req.ip} but could not be found.`);
-      res.status(400).json({
+      res.status(404).json({
         msg: `User with id ${doc.id} was requested to be updated, but does not exist in the db.`,
       });
     } else {

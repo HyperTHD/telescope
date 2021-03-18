@@ -51,19 +51,19 @@ npm run jest:e2e (or npm run jest:e2e src\api\user\test\e2e)
 npm run dev
 ```
 
-By default the server is running on http://localhost:6666/.
+By default the server is running on <http://localhost:6666/>.
 
 ### Examples
 
-\- `GET /user/:id` - returns 200 with the user specified by the id, or 404 if a user does not exist.
+\- `GET /:id` - returns 200 with the user specified by the id, or 404 if a user does not exist.
 
-\- `GET /users` - returns 200 with all Telescope users in an array, or 404 if the `users` collection is empty.
+\- `GET /` - returns 200 with all Telescope users in an array, or 404 if the `users` collection is empty.
 
-\- `POST /user` - returns 201 if a Telescope user was successfully validated and added to the db, or 400 if the user already exists. (_An example of the JSON data to send as the POST body can be found in `api/user/test/user.test.js`_)
+\- `POST /` - returns 201 if a Telescope user was successfully validated and added to the db, or 400 if the user already exists. (_An example of the JSON data to send as the POST body can be found in `api/user/test/user.test.js`_)
 
-\- `PUT /user/:id` - returns 200 if a Telescope user's data was successfully updated, or 400 if the user could not be found in the db. (_An example of the JSON data to send as the POST body can be found in `api/user/test/user.test.js`_)
+\- `PUT /:id` - returns 200 if a Telescope user's data was successfully updated, or 400 if the user could not be found in the db. (_An example of the JSON data to send as the POST body can be found in `api/user/test/user.test.js`_)
 
-\- `DELETE /user/:id` - returns 200 when the user is deleted, or 404 if a user to delete could not be found.
+\- `DELETE /:id` - returns 200 when the user is deleted, or 404 if a user to delete could not be found.
 
 ## Docker (section currently incomplete)
 
